@@ -32,18 +32,19 @@ func NewService(salesStorage *LocalStorage, userService *user.Service) *Service 
 // It sets CreatedAt and UpdatedAt to the current time and initializes Version to 1.
 // Returns ErrEmptyID if user.ID is empty.
 func (s *Service) Create(userID string, amount float64) (*Sale, error) {
-	// 1. Validar monto
-	if amount <= 0 {
-		return nil, ErrInvalidAmount
-	}
 
-	// 2. Validar que el user_id exista
+	// 1. Validar que el user_id exista
 	_, err := s.userService.Get(userID)
 	if err != nil {
 		if errors.Is(err, user.ErrNotFound) { // Comprueba si el error es 'user.ErrNotFound'
 			return nil, ErrUserNotFound // Devuelve nuestro error específico
 		}
 		return nil, err // Devuelve otros errores (ej: problemas internos del servicio de usuario)
+	}
+
+	// 2. Validar monto
+	if amount <= 0 {
+		return nil, ErrInvalidAmount
 	}
 
 	// 3. Asignar estado aleatorio
@@ -60,7 +61,6 @@ func (s *Service) Create(userID string, amount float64) (*Sale, error) {
 		CreatedAt: now,
 		UpdatedAt: now,
 		Version:   1,
-		// No necesitas 'Estado' como en User, a menos que quieras un borrado lógico para ventas también.
 	}
 
 	// 5. Guardar la venta
@@ -70,4 +70,12 @@ func (s *Service) Create(userID string, amount float64) (*Sale, error) {
 
 	// 6. Devolver la venta creada
 	return sale, nil
+}
+
+func (s *Service) Get(userID string, status string) ([]Sale, error) {
+	return nil, nil
+}
+
+func (s *Service) Update(saleID string, status string) (*Sale, error) {
+	return nil, nil
 }

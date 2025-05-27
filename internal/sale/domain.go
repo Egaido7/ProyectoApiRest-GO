@@ -27,3 +27,11 @@ type UpdateSale struct {
 	Address  *string `json:"address" binding:"required"`     // Opcional
 	NickName *string `json:"nickname" binding:"regexp"`      // Solo letras si se
 }
+
+type Metadata struct {
+	Quantity    int     `json:"quantity"`
+	Approved    int     `json:"approved"`
+	Rejected    int     `json:"rejected"`
+	Pending     int     `json:"pending"`
+	TotalAmount float64 `json:"total_amount"`
+}
