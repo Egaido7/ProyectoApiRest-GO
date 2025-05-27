@@ -72,8 +72,26 @@ func (s *Service) Create(userID string, amount float64) (*Sale, error) {
 	return sale, nil
 }
 
-func (s *Service) Get(userID string, status string) ([]Sale, error) {
-	return nil, nil
+func (s *Service) Get(userID string, status *string) ([]*Sale, error) {
+	if status == nil {
+		sales, err := s.salesStorage.GetByUserID(userID)
+		if err != nil {
+			return nil, err
+		}
+		return sales, nil
+	}
+
+	err := s.salesStorage.ValidStatus(*status)
+	if err != nil {
+		return nil, err
+	}
+
+	sales, err := s.salesStorage.getByUserIdAndStatus(userID, *status)
+	if err != nil {
+		return nil, err
+	}
+	return sales, nil
+
 }
 
 func (s *Service) Update(saleID string, status string) (*Sale, error) {

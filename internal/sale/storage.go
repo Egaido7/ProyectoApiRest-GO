@@ -8,6 +8,8 @@ var ErrNotFound = errors.New("sale not found")
 // ErrEmptyID is returned when trying to store a user with an empty ID.
 var ErrEmptyID = errors.New("empty sale ID")
 
+var ErrInvalidStatus = errors.New("invalid status")
+
 // LocalStorage provides an in-memory implementation for storing users.
 type LocalStorage struct {
 	m map[string]*Sale
@@ -45,6 +47,45 @@ func (l *LocalStorage) Get(id string) (*Sale, error) {
 	return s, nil
 }
 
+func (l *LocalStorage) GetByUserID(userID string) ([]*Sale, error) {
+	var sales []*Sale
+	for _, sale := range l.m {
+		if sale.UserID == userID {
+			sales = append(sales, sale)
+		}
+	}
+	if len(sales) == 0 {
+		return nil, ErrNotFound
+	}
+	return sales, nil
+}
+
+func (l *LocalStorage) getByUserIdAndStatus(userID string, status string) ([]*Sale, error) {
+	err := l.ValidStatus(status)
+	if err != nil {
+		return nil, err
+	}
+
+	var sales []*Sale
+	for _, sale := range l.m {
+		if sale.UserID == userID && sale.Status == status {
+			sales = append(sales, sale)
+		}
+	}
+	if len(sales) == 0 {
+		return nil, ErrNotFound
+	}
+	return sales, nil
+
+}
+
+func (l *LocalStorage) ValidStatus(status string) error {
+	if status != "active" && status != "pending" && status != "approved" {
+		return ErrInvalidStatus
+	}
+	return nil
+}
+
 // Delete removes a user from the local storage by ID.
 // Returns ErrNotFound if the user does not exist.
 func (l *LocalStorage) Delete(id string) error {
@@ -55,15 +96,4 @@ func (l *LocalStorage) Delete(id string) error {
 
 	delete(l.m, id) //eliminar keys de un mapa, parametro derecho que quiero eliminar, parametro lado izquierdo el mapa; elimina clave-valor
 	return nil
-}
-
-func (l *LocalStorage) ListActive() ([]*Sale, error) {
-	var activeSales []*Sale
-	for _, sale := range l.m {
-		if sale.Status != "active" || sale.Status != "pending" || sale.Status != "approved" {
-			activeSales = append(activeSales, sale)
-		}
-	}
-
-	return activeSales, nil
 }
