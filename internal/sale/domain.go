@@ -20,6 +20,9 @@ type CreateSaleRequest struct {
 	Amount float64 `json:"amount" binding:"required, gt=0"` // Monto de la venta
 }
 
+type GetSalesRequest struct {
+}
+
 // UpdateFields represents the optional fields for updating a User.
 // A nil pointer means “no change” for that field.
 type UpdateSale struct {

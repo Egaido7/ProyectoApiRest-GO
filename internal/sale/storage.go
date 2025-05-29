@@ -38,8 +38,7 @@ func (l *LocalStorage) Set(sale *Sale) error {
 func (l *LocalStorage) Get(id string) (*Sale, error) {
 	//lado izquierdo tipo de mapa (tipo mapa), booleano si existe o no en el mapa
 	s, ok := l.m[id]
-	if !ok || s.Status != "active" || s.Status != "pending" || s.Status != "approved" {
-		// Verifica si el estado es activo, pendiente o aprobado
+	if !ok {
 		// Si no es ninguno de estos, retorna ErrNotFound
 		return nil, ErrNotFound
 	}
@@ -96,4 +95,36 @@ func (l *LocalStorage) Delete(id string) error {
 
 	delete(l.m, id) //eliminar keys de un mapa, parametro derecho que quiero eliminar, parametro lado izquierdo el mapa; elimina clave-valor
 	return nil
+}
+
+func (l *LocalStorage) FillMetadata(sales []*Sale) (*Metadata, error) {
+	meta := new(Metadata)
+
+	meta.Quantity = 0
+	meta.Pending = 0
+	meta.Approved = 0
+	meta.Rejected = 0
+	meta.TotalAmount = 0.0
+
+	if len(sales) == 0 || sales == nil {
+		return nil, nil
+	}
+
+	for _, sale := range sales {
+		err := l.ValidStatus(sale.Status)
+		if err != nil {
+			return meta, err
+		}
+		meta.Quantity++
+		if sale.Status == "Pending" {
+			meta.Pending++
+		} else if sale.Status == "Approved" {
+			meta.Approved++
+		} else {
+			meta.Rejected++
+		}
+		meta.TotalAmount += sale.Amount
+	}
+
+	return meta, nil
 }
