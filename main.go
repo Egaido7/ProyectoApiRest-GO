@@ -16,7 +16,7 @@ import (
 // Custom validation function for regexp
 func regexpValidation(fl validator.FieldLevel) bool {
 	value := fl.Field().String()
-	regex := regexp.MustCompile(`^[a-zA-Z]+$`)
+	regex := regexp.MustCompile(`^[a-zA-Z]+(?: [a-zA-Z]+)*$`)
 	return regex.MatchString(value)
 }
 func main() {

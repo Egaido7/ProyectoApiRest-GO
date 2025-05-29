@@ -22,9 +22,9 @@ type handler struct {
 func (h *handler) handleCreate(ctx *gin.Context) {
 	// request payload
 	var req struct {
-		Name     string `json:"name" binding:"required,regexp=^[a-zA-Z ]+$"` //anotations; si el content type es json, el nombre del campo es name
+		Name     string `json:"name" binding:"required,regexp` //anotations; si el content type es json, el nombre del campo es name
 		Address  string `json:"address" binding:"required"`
-		NickName string `json:"nickname" binding:"omitempty,regexp=^[a-zA-Z]+$"` //solo letras
+		NickName string `json:"nickname" binding:"omitempty,regexp` //solo letras
 	}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
