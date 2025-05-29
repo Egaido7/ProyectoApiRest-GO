@@ -38,7 +38,7 @@ func (l *LocalStorage) Set(sale *Sale) error {
 func (l *LocalStorage) Get(id string) (*Sale, error) {
 	//lado izquierdo tipo de mapa (tipo mapa), booleano si existe o no en el mapa
 	s, ok := l.m[id]
-	if !ok || s.Status != "active" || s.Status != "pending" || s.Status != "approved" {
+	if !ok {
 		// Verifica si el estado es activo, pendiente o aprobado
 		// Si no es ninguno de estos, retorna ErrNotFound
 		return nil, ErrNotFound
@@ -96,4 +96,14 @@ func (l *LocalStorage) Delete(id string) error {
 
 	delete(l.m, id) //eliminar keys de un mapa, parametro derecho que quiero eliminar, parametro lado izquierdo el mapa; elimina clave-valor
 	return nil
+}
+
+// GetForUpdate recupera una venta por ID, sin importar su estado 'Estado'.
+// Es útil para operaciones internas como actualizar o borrar donde necesitas la entidad tal cual está.
+func (l *LocalStorage) GetForUpdate(id string) (*Sale, error) {
+	s, ok := l.m[id]
+	if !ok {
+		return nil, ErrNotFound
+	}
+	return s, nil
 }
