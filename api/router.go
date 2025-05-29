@@ -32,6 +32,7 @@ func InitRoutes(e *gin.Engine) {
 	e.POST("/sales", h.handleCreateSale)
 	e.GET("/users/:id", h.handleRead)
 	e.GET("/users", h.handleListActive)
+	e.GET("/sales/:id/:status", h.handleReadSales)
 	e.PATCH("/users/:id", h.handleUpdate)
 	e.DELETE("/users/:id", h.handleDelete)
 	e.PATCH("/sales/:id", h.handleUpdateSaleStatus)
