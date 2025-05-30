@@ -79,7 +79,7 @@ func (l *LocalStorage) getByUserIdAndStatus(userID string, status string) ([]*Sa
 }
 
 func (l *LocalStorage) ValidStatus(status string) error {
-	if status != "active" && status != "pending" && status != "approved" {
+	if status != "rejected" && status != "pending" && status != "approved" {
 		return ErrInvalidStatus
 	}
 	return nil
@@ -126,9 +126,9 @@ func (l *LocalStorage) FillMetadata(sales []*Sale) (*Metadata, error) {
 			return meta, err
 		}
 		meta.Quantity++
-		if sale.Status == "Pending" {
+		if sale.Status == "pending" {
 			meta.Pending++
-		} else if sale.Status == "Approved" {
+		} else if sale.Status == "approved" {
 			meta.Approved++
 		} else {
 			meta.Rejected++

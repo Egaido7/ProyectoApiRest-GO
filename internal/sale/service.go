@@ -85,19 +85,19 @@ func (s *Service) Create(userID string, amount float64) (*Sale, error) {
 	return sale, nil
 }
 
-func (s *Service) Get(userID string, status *string) ([]*Sale, *Metadata, error) {
-	if status == nil {
-		sales, err := s.salesStorage.GetByUserID(userID)
-		if err != nil {
-			return nil, nil, err
-		}
-		meta, err := s.salesStorage.FillMetadata(sales)
-		if err != nil {
-			return nil, nil, err
-		}
-		return sales, meta, nil
+func (s *Service) Get(userID string) ([]*Sale, *Metadata, error) {
+	sales, err := s.salesStorage.GetByUserID(userID)
+	if err != nil {
+		return nil, nil, err
 	}
+	meta, err := s.salesStorage.FillMetadata(sales)
+	if err != nil {
+		return nil, nil, err
+	}
+	return sales, meta, nil
+}
 
+func (s *Service) GetByStatus(userID string, status *string) ([]*Sale, *Metadata, error) {
 	err := s.salesStorage.ValidStatus(*status)
 	if err != nil {
 		return nil, nil, err
@@ -112,7 +112,6 @@ func (s *Service) Get(userID string, status *string) ([]*Sale, *Metadata, error)
 		return nil, nil, err
 	}
 	return sales, meta, nil
-
 }
 
 func (s *Service) Update(saleID string, status string) (*Sale, error) {

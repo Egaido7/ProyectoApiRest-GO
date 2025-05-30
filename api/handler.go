@@ -169,9 +169,29 @@ func (h *handler) handleCreateSale(ctx *gin.Context) {
 
 func (h *handler) handleReadSales(ctx *gin.Context) {
 	id := ctx.Param("id")
+
+	sales, metadata, err := h.saleService.Get(id)
+	if err != nil {
+		if errors.Is(err, sale.ErrNotFound) {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	respuesta := gin.H{
+		"metadata": metadata,
+		"results":  sales,
+	}
+
+	ctx.JSON(http.StatusOK, respuesta)
+}
+
+func (h *handler) handleReadSalesWithStatus(ctx *gin.Context) {
+	id := ctx.Param("id")
 	status := ctx.Param("status")
 
-	sales, metadata, err := h.saleService.Get(id, &status)
+	sales, metadata, err := h.saleService.GetByStatus(id, &status)
 	if err != nil {
 		if errors.Is(err, sale.ErrNotFound) {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
